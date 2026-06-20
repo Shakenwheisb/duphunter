@@ -1,0 +1,36 @@
+[package]
+name = "dupcore"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Local duplicate-file detection core: tiered exact hashing + video near-duplicate fingerprinting."
+
+[dependencies]
+# Hashing
+blake3 = "1"                                   # Fast default content hash
+xxhash-rust = { version = "0.8", features = ["xxh3"] }  # xxHash3 fast option
+sha2 = "0.10"                                  # SHA-256 crypto-strong option
+
+# Parallelism / traversal
+rayon = "1"                                    # Parallel hashing across CPU cores
+jwalk = "0.8"                                  # Parallel recursive directory walk
+globset = "0.4"                                # Glob exclude patterns
+same-file = "1"                                # Filesystem identity (hardlink detection)
+
+# Near-dup (video)
+# Frames are sampled by ffmpeg as a tiny 9x8 grayscale raw buffer piped to stdout,
+# from which we compute a dHash directly — no image-decoding crate needed (keeps
+# the dependency tree small and avoids the img_hash/image version clash).
+strsim = "0.11"                                # Normalized filename similarity
+
+# Persistence / IO
+rusqlite = { version = "0.32", features = ["bundled"] } # On-disk (path,size,mtime)->hash cache
+serde = { version = "1", features = ["derive"] }        # IPC types + JSON manifest/export
+serde_json = "1"
+csv = "1"                                      # CSV export
+trash = "5"                                    # Recycle Bin (Windows) / Trash (macOS) deletes
+thiserror = "2"                                # Ergonomic error types
+
+[dev-dependencies]
+tempfile = "3"                                 # Temp fixtures for unit tests

@@ -1,0 +1,27 @@
+[package]
+name = "duphunter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "DupHunter — local, offline duplicate file finder"
+default-run = "duphunter"
+
+[lib]
+# Tauri 2 keeps app logic in a lib so it can be shared with mobile targets.
+name = "duphunter_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+dupcore = { path = "../crates/dupcore" }
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"      # Native folder picker
+tauri-plugin-store = "2"       # Persist recent locations + settings
+tauri-plugin-fs = "2"          # Asset access for previews (convertFileSrc)
+tauri-plugin-opener = "2"      # "Reveal in Explorer" / open file externally
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+once_cell = "1"                # Lazily-held scan control handle

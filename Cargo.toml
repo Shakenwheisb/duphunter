@@ -1,0 +1,18 @@
+# Cargo workspace root.
+# `dupcore` holds all detection/action logic with no GUI deps (fully unit-testable);
+# `src-tauri` is the thin Tauri binary that wires dupcore to the React UI.
+[workspace]
+members = ["crates/dupcore", "src-tauri"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["DupHunter"]
+
+[profile.release]
+# Smaller, faster binaries for the shipped app.
+lto = true
+codegen-units = 1
+strip = true

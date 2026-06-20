@@ -1,0 +1,49 @@
+name: Build Windows installer
+
+# Builds the DupHunter Windows .msi + NSIS .exe on a Windows runner.
+# Triggered on version tags (v*) and manually. The macOS dev machine can't
+# produce a Windows bundle, so CI is the source of the shipped installer.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "src-tauri -> target"
+
+      - name: Install frontend deps
+        run: npm ci
+
+      - name: Run core tests
+        run: cargo test -p dupcore
+
+      - name: Run frontend tests
+        run: npm test
+
+      - name: Build app + installer
+        run: npm run tauri build
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: duphunter-windows
+          path: |
+            src-tauri/target/release/bundle/msi/*.msi
+            src-tauri/target/release/bundle/nsis/*.exe

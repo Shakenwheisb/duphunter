@@ -1,0 +1,19 @@
+# Rust
+/target
+**/target
+
+# Node
+node_modules
+dist
+dist-ssr
+*.local
+
+# Tauri generated
+src-tauri/gen/schemas
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated icon source (regenerate with scripts/generate-icon.mjs)
+scripts/app-icon.png
