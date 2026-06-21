@@ -164,7 +164,7 @@ fn video_thumbnail(app: AppHandle, path: PathBuf) -> Result<PathBuf, String> {
     if out.exists() {
         return Ok(out);
     }
-    let status = std::process::Command::new("ffmpeg")
+    let status = dupcore::video::ffmpeg_command("ffmpeg")
         .args(["-v", "error", "-ss", "3", "-i"])
         .arg(&path)
         .args(["-frames:v", "1", "-vf", "scale=320:-1", "-y"])

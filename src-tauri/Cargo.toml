@@ -17,7 +17,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 dupcore = { path = "../crates/dupcore" }
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["protocol-asset"] }
 tauri-plugin-dialog = "2"      # Native folder picker
 tauri-plugin-store = "2"       # Persist recent locations + settings
 tauri-plugin-fs = "2"          # Asset access for previews (convertFileSrc)

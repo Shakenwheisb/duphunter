@@ -27,13 +27,29 @@ use std::time::Instant;
 const HASH_W: u32 = 9;
 const HASH_H: u32 = 8;
 
+/// Build a `Command` for ffmpeg/ffprobe that does **not** flash a console window
+/// on Windows. Every external invocation must go through this, otherwise each
+/// frame sample/probe pops a cmd window and stutters the UI.
+pub fn ffmpeg_command(program: &str) -> Command {
+    #[allow(unused_mut)]
+    let mut cmd = Command::new(program);
+    #[cfg(windows)]
+    {
+        use std::os::windows::process::CommandExt;
+        // CREATE_NO_WINDOW — run the child process without a console window.
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    cmd
+}
+
 /// Are both ffmpeg and ffprobe available on PATH?
 pub fn ffmpeg_available() -> bool {
     tool_ok("ffprobe") && tool_ok("ffmpeg")
 }
 
 fn tool_ok(name: &str) -> bool {
-    Command::new(name)
+    ffmpeg_command(name)
         .arg("-version")
         .stdout(Stdio::null())
         .stderr(Stdio::null())
@@ -44,7 +60,7 @@ fn tool_ok(name: &str) -> bool {
 
 /// Probe container/stream metadata via ffprobe.
 pub fn probe(path: &Path) -> Result<VideoMeta> {
-    let out = Command::new("ffprobe")
+    let out = ffmpeg_command("ffprobe")
         .args([
             "-v",
             "quiet",
@@ -115,7 +131,7 @@ pub fn fingerprint(path: &Path, duration_secs: f64, samples: u8) -> Result<Vec<u
 /// Extract one frame at `ts` seconds, scaled to 9×8 grayscale raw bytes, and
 /// compute its dHash.
 fn sample_frame_hash(path: &Path, ts: f64) -> Result<u64> {
-    let out = Command::new("ffmpeg")
+    let out = ffmpeg_command("ffmpeg")
         .args(["-v", "error", "-ss", &format!("{ts:.3}")])
         .arg("-i")
         .arg(path)

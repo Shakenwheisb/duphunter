@@ -1,7 +1,7 @@
 {
   "name": "duphunter",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "DupHunter — local, offline duplicate file finder (Tauri + React).",
   "scripts": {
